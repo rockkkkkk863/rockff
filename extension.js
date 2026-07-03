@@ -1,4 +1,5 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
+import update from "./update.js";
 export const type = "extension";
 export default function () {
 	return {
@@ -10926,7 +10927,47 @@ export default function () {
 				if (!lib.config.characters.contains('csxl2')) lib.config.characters.push('csxl2');
 				lib.translate['csxl2_character_config'] = '重塑系列削弱版';					
 			};
-		}, help: {}, package: {
+		}, 
+				config: {
+			update_source: {
+				name: `<font color="#9c27b0">更新镜像源`,
+				init: "0",
+				item: {
+					0: "扩展官方源",
+					1: "GitHub官方源",
+					2: "gh-proxy全球镜像",
+					3: "gh-proxy国内镜像",
+					4: "tvv.tw镜像源",
+				}
+			},
+			update_method: {
+				name: `<font color="#2196f3">极速更新`,
+				init: false,
+				intro: "开启后，在线更新将跳过音频、视频和图片等大文件，仅更新 .js 和 .css 代码文件，显著加快更新速度。",
+			},
+			auto_update: {
+				name: `<font color="#e91e63">自动检测更新`,
+				init: true,
+				intro: "启动游戏时自动检查更新",
+			},
+			check_update: {
+				name: `<span style="color:#4caf50;text-decoration: underline">检查更新`,
+				clear: true,
+				onclick: async function () {
+					this.innerHTML = `<span style="color:#f61515ff;text-decoration: underline">正在检测更新...`;
+					try {
+						await update(true);
+						this.innerHTML = `<span style="color:#4caf50;text-decoration: underline">更新完成`;
+					} catch {
+						this.innerHTML = `<span style="color:#f44336;text-decoration: underline">更新失败`;
+					}
+					setTimeout(() => {
+						this.innerHTML = `<span style="color:#4caf50;text-decoration: underline">检查更新`;
+					}, 2000);
+				}
+			},
+		},
+		help: {}, package: {
 			character: {
 				character: {
 				},
