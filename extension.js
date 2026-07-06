@@ -547,7 +547,7 @@ export default function () {
 							ffxianmou_info: "转换技，你的判定牌/手牌离开处理区/手牌区时，你可将失去方式改为①使用：②分配；③卜算。",
 							ffsunshangxianggai: "孙尚香",
 							ffjianwugai: "剑舞",
-							ffjianwugai_info: "吴势力技，当一张装备牌进入弃牌堆时，你可以重铸任意张手牌并获得之。若此时是你的回合内，变更势力为【蜀】。",
+							ffjianwugai_info: "吴势力技，当一张装备牌进入弃牌堆时，你可以重铸任意张牌并获得之。若你以此法重铸了非基本牌，变更势力为【蜀】并回复一点体力。",
 							ffzhuchenggai: "筑城",
 							ffzhuchenggai_info: "蜀势力技，出牌阶段，你可以将手牌调整至你装备区牌数，若你因此弃了至少2张牌，你可以获得场上一张牌，否则变更势力为【吴】。",
 							ffmihenggai: "祢衡",
@@ -2033,7 +2033,7 @@ export default function () {
 								},
 								async content(event, trigger, player) {
 									var result = await player.chooseCard({
-										position: "h",
+										position: "he",
 										selectCard: [1, Infinity],
 									}).forResult()
 									await player.recast(result.cards);
@@ -2044,8 +2044,12 @@ export default function () {
 											}
 										}
 									}
-									if (_status.currentPhase == player) {
-										player.changeGroup("shu");
+									for (var j = 0; j < result.cards.length; j++) {
+										if (get.type(result.cards[j]) != "basic") {
+											player.changeGroup("shu");
+											player.recover();
+											break;
+										}
 									}
 								},
 							},
@@ -3949,6 +3953,9 @@ export default function () {
 								subSkill: {
 									"sha": {
 										enable: "chooseToUse",
+										filter(event,player){
+											return player.countCards("h") != 4
+										},
 										filterCard: () => false,
 										selectCard: -1,
 										viewAs: {
@@ -3957,6 +3964,9 @@ export default function () {
 									},
 									"shan": {
 										enable: "chooseToUse",
+										filter(event,player){
+											return player.countCards("h") != 3
+										},
 										filterCard: () => false,
 										selectCard: -1,
 										viewAs: {
@@ -3964,6 +3974,9 @@ export default function () {
 										},
 									},
 									"tao": {
+										filter(event,player){
+											return player.countCards("h") != 2
+										},
 										enable: "chooseToUse",
 										filterCard: () => false,
 										selectCard: -1,
@@ -3972,6 +3985,9 @@ export default function () {
 										},
 									},
 									"jiu": {
+										filter(event,player){
+											return player.countCards("h") != 1
+										},
 										enable: "chooseToUse",
 										filterCard: () => false,
 										selectCard: -1,
@@ -10966,6 +10982,33 @@ export default function () {
 					}, 2000);
 				}
 			},
+		},
+				content: function (config, pack) {
+			//【更新说明】
+			let gengxin_cs = [
+				{
+					type: "text",
+					data: `○新增武将：`,
+				},
+				{
+					type: "players", data: [
+						"无",
+
+					]
+				},
+				{
+					type: "text",
+					data: `○武将调整：`,
+				},
+				{
+					type: "players", data: [
+						"ffyangzhen_gai",
+						"ffsunshangxianggai"
+					]
+				},
+			];
+			game.showExtensionChangeLog(gengxin_cs, "重塑系列削弱版");
+			if (lib.config.extension_重塑系列削弱版_auto_update && navigator.onLine) update(false);
 		},
 		help: {}, package: {
 			character: {
