@@ -4,8 +4,8 @@ const crypto = require('crypto');
 
 const EXT_DIR = './';          // 脚本放在扩展根目录运行
 const OUTPUT = 'manifest.json';
-const VERSION = 'v1.0.0';      // 版本号，每次更新请修改
-const UPDATE_NOTE = 'v1.0.0正式版，新增在线更新'; // 更新说明
+const VERSION = 'v1.0.1';      // 版本号，每次更新请修改
+const UPDATE_NOTE = 'v1.0.1新增武将春申君'; // 更新说明
 
 // 递归获取所有文件相对路径
 function walkDir(dir, baseDir, fileList = []) {

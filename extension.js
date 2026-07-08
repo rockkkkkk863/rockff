@@ -491,7 +491,14 @@ export default function () {
 								hp: 3,
 								skills: ['ffgoudao', "fffenquan", "oldniepan", "ffsanku"],
 								img: "extension/重塑系列削弱版/pic/ff_mengchangjun.jpg",
-							},																																																																																																																																
+							},
+							ff_chunshenjun:{
+								sex: 'male',
+								group: 'qun',
+								hp: 3,
+								skills: ['ffjiemu', "ffwuwang"],
+								img: "extension/重塑系列削弱版/pic/ff_chunshenjun.jpg",								
+							}																																																																																																																																
 						},																	
 						translate: {
 							csxl2: "重塑系列削弱版",
@@ -862,7 +869,12 @@ export default function () {
 							ffsanku: "三窟",
 							ffsanku_info: "锁定技，你武将牌上的第X个技能视为【制衡】。(X为你手牌中的类型数)",
 							ffzhiheng: "制衡",
-							ffzhiheng_info:"出牌阶段限一次，你可以弃置任意张牌并摸等量的牌，若你在发动【制衡】时弃置了所有手牌，则你多摸一张牌。",																																																																																																																																				
+							ffzhiheng_info:"出牌阶段限一次，你可以弃置任意张牌并摸等量的牌，若你在发动【制衡】时弃置了所有手牌，则你多摸一张牌。",
+							ff_chunshenjun:"春申君",
+							ffjiemu:"接木",
+							ffjiemu_info:"每轮限1次，一名角色于其回合内使用牌时，你可以移出任意张牌并令其改为使用其中一张牌，然后你将手牌数和此技能本轮可发动次数调整至X。(X为被移出的牌数且至多调整5)",
+							ffwuwang:"无妄",
+							ffwuwang_info:"锁定技，一名角色造成伤害后，随机弃置一半的移出牌，然后其本回合可以如手牌般使用或打出被移出的牌。",																																																																																																																																				
 						},				
 						skill: {
 							//李儒
@@ -10929,7 +10941,140 @@ export default function () {
 										}
 									},
 								}
-							}																																																																																																																										
+							},
+							ffjiemu:{
+								trigger:{
+									global:"useCard",
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								group:"ffjiemu_ct",
+								filter(event,player){
+									if(player.countMark("ffjiemu") < player.countMark("ffjiemu_ct")){
+										return false
+									}
+									return event.getParent(2).name != "ffjiemu" && event.getParent(1).name != "ffjiemu" && event.player == _status.currentPhase
+								},
+								async content(event, trigger, player) {
+									player.addMark("ffjiemu_ct",1)
+									trigger.cancel();
+									var result = await player.chooseCard({
+										position: "he",
+										selectCard: [1, Infinity],
+									}).forResult()									
+									await player.addToExpansion(player, "gain2", result.cards).set("gaintag", ["ffjiemu"]);
+									const cards = result.cards
+									const cards2 = result.cards
+									for(const card of cards2){
+										if(!trigger.player.hasUseTarget(card,true,false)){
+											cards.remove(card)
+										}
+									}
+									var result = await trigger.player.chooseButton(["接木：使用一张移出牌", cards], true).forResult()
+									if (result.bool) {
+										await trigger.player.gain(result.links);
+										await trigger.player.chooseUseTarget(result.links,true,false)
+									};
+									var a = player.getExpansions("ffjiemu").length
+									if(a - player.countMark("ffjiemu") > 5){
+										player.addMark("ffjiemu",5)
+									}else{
+										player.setMark("ffjiemu",a)
+									}										
+									if(a < player.countCards("h")){
+										await player.chooseToDiscard(player.countCards("h") - a, true).forResult()
+									}else{
+										if(a - player.countCards("h") > 5){
+											await player.draw(5)
+										}else{
+											await player.drawTo(a)
+										}
+									}																							
+								},
+								subSkill:{
+									"ct":{
+										trigger:{
+											global:"roundStart"
+										},
+										forced:true,
+										popup:false,
+										async content(event, trigger, player) {
+											player.setMark("ffjiemu_ct",1)
+											player.setMark("ffjiemu",1)
+										}
+									}
+								},
+								intro: {
+									name: "接木可发动次数",
+									content: function (storage, player) {
+										return
+									},
+								},
+								marktext: "接",								
+							},
+							ffwuwang:{
+								trigger:{
+									global:"damageSource",
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								forced:true,
+								async content(event, trigger, player) {
+             					    var cards3 = player.getExpansions("ffjiemu")
+									if(cards3.length > 0){
+										var num = Math.ceil(cards3.length / 2);
+										var dis = cards3.randomGets(num)
+										await player.loseToDiscardpile(dis);	
+									}
+									trigger.source.addTempSkill("ffwuwang_use")											
+								},
+								subSkill:{
+									"use":{
+										enable: ["chooseToUse","chooseToRespond"],
+										hiddenCard(player, name) {
+											var tar = game.filterPlayer(function (target) {
+												return target.hasSkill('ffwuwang');
+											});
+											if (tar[0].getExpansions("ffjiemu").some(card => card.name == name)) {
+												return true;
+											}
+										},
+										filter: function (event, player) {
+											if (event.responded || event.ffwuwang_use) {
+												return false;
+											}
+											return player.getExpansions("ffjiemu").some(card => event.filterCard(card, player, event));
+										},
+										chooseButton: {
+											dialog(event, player) {
+												return ui.create.dialog("无妄", player.getExpansions("ffjiemu"), "hidden");
+											},
+											filter(button, player) {
+												const evt = _status.event.getParent();
+												return evt.filterCard(button.link, player, evt);
+											},
+											check(button) {
+												const card = button.link,
+													player = get.player();
+												return player.getUseValue(card);
+											},
+											backup(links, player) {
+												return {
+													audio: "ffwuwang",
+													filterCard(card) {
+														return card === lib.skill.ffwuwang_use_backup.card;
+													},
+													selectCard: -1,
+													viewAs: links[0],
+													card: links[0],
+													position: "x",
+												};
+											},
+											prompt(links, player) {
+												return "无妄：请选择" + get.translation(links[0]) + "的目标";
+											},
+										},																		
+									}
+								}								
+							},																																																																																																																										
 						},
 					};					
 					/*if(lib.device||lib.node){
@@ -10992,7 +11137,7 @@ export default function () {
 				},
 				{
 					type: "players", data: [
-						"无",
+						"ff_chunshenjun",
 
 					]
 				},
