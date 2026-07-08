@@ -10969,26 +10969,28 @@ export default function () {
 											cards.remove(card)
 										}
 									}
-									var result = await trigger.player.chooseButton(["接木：使用一张移出牌", cards], true).forResult()
-									if (result.bool) {
-										await trigger.player.gain(result.links);
-										await trigger.player.chooseUseTarget(result.links,true,false)
-									};
-									var a = player.getExpansions("ffjiemu").length
-									if(a - player.countMark("ffjiemu") > 5){
-										player.addMark("ffjiemu",5)
-									}else{
-										player.setMark("ffjiemu",a)
-									}										
-									if(a < player.countCards("h")){
-										await player.chooseToDiscard(player.countCards("h") - a, true).forResult()
-									}else{
-										if(a - player.countCards("h") > 5){
-											await player.draw(5)
-										}else{
-											await player.drawTo(a)
+									if(cards.length > 0){
+										var result = await trigger.player.chooseButton(["接木：使用一张移出牌", cards], true).forResult()
+										if (result.bool) {
+											await trigger.player.gain(result.links);
+											await trigger.player.chooseUseTarget(result.links, true, false)
+										};
+										var a = player.getExpansions("ffjiemu").length
+										if (a - player.countMark("ffjiemu") > 5) {
+											player.addMark("ffjiemu", 5)
+										} else {
+											player.setMark("ffjiemu", a)
 										}
-									}																							
+										if (a < player.countCards("h")) {
+											await player.chooseToDiscard(player.countCards("h") - a, true).forResult()
+										} else {
+											if (a - player.countCards("h") > 5) {
+												await player.draw(5)
+											} else {
+												await player.drawTo(a)
+											}
+										}	
+									}																						
 								},
 								subSkill:{
 									"ct":{
