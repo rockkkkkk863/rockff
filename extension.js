@@ -10963,7 +10963,7 @@ export default function () {
 									}).forResult()									
 									await player.addToExpansion(player, "gain2", result.cards).set("gaintag", ["ffjiemu"]);
 									const cards = result.cards
-									const cards2 = result.cards
+									const cards2 = result.cards.slice();
 									for(const card of cards2){
 										if(!trigger.player.hasUseTarget(card,true,false)){
 											cards.remove(card)
