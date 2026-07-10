@@ -498,6 +498,13 @@ export default function () {
 								hp: 3,
 								skills: ['ffjiemu', "ffwuwang"],
 								img: "extension/重塑系列削弱版/pic/ff_chunshenjun.jpg",								
+							},
+							ff_xinlingjun:{
+								sex: 'male',
+								group: 'qun',
+								hp: 3,
+								skills: ['ffxuzuo', "ffqiefu"],
+								img: "extension/重塑系列削弱版/pic/ff_xinlingjun.jpg",									
 							}																																																																																																																																
 						},																	
 						translate: {
@@ -874,7 +881,12 @@ export default function () {
 							ffjiemu:"接木",
 							ffjiemu_info:"每轮限1次，一名角色于其回合内使用牌时，你可以移出任意张牌并令其改为使用其中一张牌，然后你将手牌数和此技能本轮可发动次数调整至X。(X为被移出的牌数且至多调整5)",
 							ffwuwang:"无妄",
-							ffwuwang_info:"锁定技，一名角色造成伤害后，随机弃置一半的移出牌，然后其本回合可以如手牌般使用或打出被移出的牌。",																																																																																																																																				
+							ffwuwang_info:"锁定技，一名角色造成伤害后，随机弃置一半的移出牌，然后其本回合可以如手牌般使用或打出被移出的牌。",
+							ff_xinlingjun:"信陵君",
+							ffxuzuo:"虚左",
+							ffxuzuo_info:"出牌阶段各限一次，若你的手牌数等于空置装备栏数或场上牌数，你可以将手牌数调整至另一项，然后你可以移动场上一张牌。",
+							ffqiefu:"窃符",
+							ffqiefu_info:"每轮开始时，你可以用任意张牌交换一名其他角色至多X+1张牌，当你失去所有因此获得的牌时，重复此效果。(X为你选择的牌数)",																																																																																																																																			
 						},				
 						skill: {
 							//李儒
@@ -3254,11 +3266,18 @@ export default function () {
 								},
 								ai: {
 									order(item, player) {
+										const event = _status.event;
+										if (event.name === 'chooseToRespond' || event.name === 'chooseToUse' && event.type !== 'phase') {
+											return 10;
+										}
 										if (player.hasCard(card => lib.filter.cardEnabled(card, player) && !card.storage?.ffyinsigai, "hes")) {
 											return 1;
 										}
 										return 10;
 									},
+									respondSha: true,
+									respondShan: true,
+									save: true,
 									result: {player: 1}
 								}
 							},
@@ -11374,7 +11393,90 @@ export default function () {
 										},																		
 									}
 								}								
-							},																																																																																																																										
+							},
+							ffxuzuo:{
+								audio: "ext:重塑系列削弱版/audio:4",
+								group:"ffxuzuo_re",
+								enable: "phaseUse",
+								filter(event,player){
+									var a = 5 - player.countCards("e")
+									var b = game.filterPlayer().map((i) => i.getCards("ej")).flat().unique().length;
+									if(a==b)return false
+									if(a == player.countCards("h")){
+										return !player.getStorage("ffxuzuo").includes(1)
+									}
+									if(b == player.countCards("h")){
+										return !player.getStorage("ffxuzuo").includes(2)
+									}									
+								},
+								async content(event, trigger, player) {
+									var a = 5 - player.countCards("e")
+									var b = game.filterPlayer().map((i) => i.getCards("ej")).flat().unique().length;
+									if(a == player.countCards("h")){
+										player.markAuto("ffxuzuo",1)
+										if(player.countCards("h") > b){
+											await player.chooseToDiscard(player.countCards("h") - b,true)
+										}else{
+											await player.drawTo(b)
+										}
+									}else{
+										player.markAuto("ffxuzuo",2)
+										if(player.countCards("h") > a){
+											await player.chooseToDiscard(player.countCards("h") - a,true)
+										}else{
+											await player.drawTo(a)
+										}										
+									}
+									await player.moveCard();									
+								},
+								subSkill:{
+									"re":{
+										trigger:{
+											player: "phaseBegin",
+										},
+										forced:true,
+										popup:false,
+										async content(event, trigger, player) {
+											player.setStorage("ffxuzuo",null)
+										}
+									}
+								}
+							},
+							ffqiefu:{
+								audio: "ext:重塑系列削弱版/audio:4",
+								trigger: {
+									player: [ "loseAfter"],
+									global: ["loseAsyncAfter", "equipAfter", "addToExpansionAfter", "gainAfter", "addJudgeAfter","roundStart"],
+								},
+								filter(event,player){
+									if(event.name == "phase")return true
+									const bool1 = event.getg && event.getg(player)?.length
+									const bool2 = event.getl && event.getl(player)?.hs?.length;
+									if (!bool1 && !bool2) {
+										return false
+									}
+									for(var i=0;i<event.cards.length;i++){
+										return player.countCards("h", (card) => card.hasGaintag("eternal_窃符")) == 0 && event.cards[i].hasGaintag("eternal_窃符")
+									} 							
+								},
+								async content(event, trigger, player) {
+									if(trigger.cards){player.removeGaintag("eternal_窃符",trigger.cards)}
+									var result = await player.chooseCardTarget({
+										position: "he",
+										selectCard: [1, Infinity],
+										filterTarget(card, player, target) {
+											return player != target
+										},
+										selectTarget: 1,
+										prompt: "窃符：用任意张牌交换一名其他角色等量+1张牌"
+									}).forResult()
+									if(result.bool){
+										var result2 = await player.gainPlayerCard(result.targets[0],"he",[1,result.cards.length+1],true).forResult()
+										player.addGaintag(result2.cards,"eternal_窃符")
+										await result.targets[0].gain(result.cards)								
+									}									
+								}															
+							}
 						},
 					};					
 					/*if(lib.device||lib.node){
@@ -11438,7 +11540,7 @@ export default function () {
 				{
 					type: "players", data: [
 						"ff_chunshenjun",
-
+						"ff_xinlingjun",
 					]
 				},
 				{
@@ -11448,7 +11550,7 @@ export default function () {
 				{
 					type: "players", data: [
 						"ffyangzhen_gai",
-						"ffsunshangxianggai"
+						"ffsunshangxianggai",
 					]
 				},
 			];
