@@ -876,7 +876,7 @@ export default function () {
 							ffsanku: "三窟",
 							ffsanku_info: "锁定技，你武将牌上的第X个技能视为【制衡】。(X为你手牌中的类型数)",
 							ffzhiheng: "制衡",
-							ffzhiheng_info:"出牌阶段限一次，你可以弃置任意张牌并摸等量的牌，若你在发动【制衡】时弃置了所有手牌，则你多摸一张牌。",
+							ffzhiheng_info:"出牌阶段限一次，你可以弃置任意张牌并摸等量的牌。",
 							ff_chunshenjun:"春申君",
 							ffjiemu:"接木",
 							ffjiemu_info:"每轮限1次，一名角色于其回合内使用牌时，你可以移出任意张牌并令其改为使用其中一张牌，然后你将手牌数和此技能本轮可发动次数调整至X。(X为被移出的牌数且至多调整5)",
