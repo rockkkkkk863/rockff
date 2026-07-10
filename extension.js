@@ -11240,11 +11240,7 @@ export default function () {
 									var index = player.skills.indexOf('ffzhiheng')
 									player.markAuto("ffzhiheng", index)
 									await player.discard(event.cards)
-									if (player.countCards("h") == 0) {
-										await player.draw(event.cards.length + 1)
-									} else {
-										await player.draw(event.cards.length)
-									}
+									await player.draw(event.cards.length)
 								},
 								subSkill: {
 									"re": {
@@ -11269,7 +11265,7 @@ export default function () {
 									if(player.countMark("ffjiemu") < player.countMark("ffjiemu_ct")){
 										return false
 									}
-									return event.getParent(2).name != "ffjiemu" && event.getParent(1).name != "ffjiemu" && event.player == _status.currentPhase
+									return event.getParent(2).name != "ffjiemu" && event.getParent(1).name != "ffjiemu" && event.player == _status.currentPhase && player.countCards("he") > 0
 								},
 								async content(event, trigger, player) {
 									player.addMark("ffjiemu_ct",1)
@@ -11277,6 +11273,7 @@ export default function () {
 									var result = await player.chooseCard({
 										position: "he",
 										selectCard: [1, Infinity],
+										forced:true,
 									}).forResult()									
 									await player.addToExpansion(player, "gain2", result.cards).set("gaintag", ["ffjiemu"]);
 									const cards = result.cards
@@ -11551,6 +11548,7 @@ export default function () {
 					type: "players", data: [
 						"ffyangzhen_gai",
 						"ffsunshangxianggai",
+						"ff_mengchangjun",
 					]
 				},
 			];
