@@ -898,7 +898,7 @@ export default function () {
 							ffwenqie:"刎妾",
 							ffwenqie_info:"当你造成或受到伤害后，你可令一名本轮造成过伤害的角色将手牌数调整至手牌上限。",
 							ffsancai:"散财",
-							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则本轮X-1。(X为你手牌数/2，向下取整)",																																																																																																																																			
+							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则此技能本回合失效。(X为你手牌数/2，向下取整)",																																																																																																																																			
 						},				
 						skill: {
 							//李儒
@@ -11516,11 +11516,12 @@ export default function () {
 							ffsancai:{
 								audio: "ext:重塑系列削弱版/audio:2",
 								enable: ["chooseToUse"],
+								usable:3,
 								log:false,
 								delay:false,
-								group:["ffsancai_remove","ffsancai_mark"],
+								group:["ffsancai_remove"],
 								filter: function (event, player) {
-									var hl = Math.floor(player.countCards('h') / 2) - player.countMark("ffsancai")
+									var hl = Math.floor(player.countCards('h') / 2)
 									if ( _status.discarded.length < hl||hl <= 0) {
 										return false
 									}
@@ -11549,7 +11550,7 @@ export default function () {
 											async precontent(event, trigger, player) {
 												player.logSkill("ffsancai");
 												var cards = _status.discarded
-												var hl = Math.floor(player.countCards('h') / 2) - player.countMark("ffsancai")
+												var hl = Math.floor(player.countCards('h') / 2)
 												var result = await player.chooseButton(["散财：分配中央区X张牌", cards], true , hl).forResult()
 												await player.gain(result.links)
 												await player.addGaintag(result.links, "散财")												
@@ -11574,13 +11575,14 @@ export default function () {
 													}
 												}
 												var cards2 = _status.discarded
-												var hl2 = Math.floor(player.countCards('h') / 2) - player.countMark("ffsancai")										
+												var hl2 = Math.floor(player.countCards('h') / 2)								
 												if (hl2 != cards2.length) {
 													player.addMark("ffsancai",1)
 													const evt = event.getParent();
 													evt.set("ffsancai", true);
 													evt.goto(0);
 													delete evt.openskilldialog;
+													player.tempBanSkill("ffsancai")
 													return;
 												}else{
 													event.result.card.cards = cards2 
@@ -11614,24 +11616,7 @@ export default function () {
 											await player.addToExpansion(player, "gain2", trigger.cards).set("gaintag", ["ffsancai"]);
 										}
 									},
-									"mark":{
-										trigger:{
-											global:"roundEnd",
-										},
-										forced:true,
-										popup:false,
-										async content(event, trigger, player) {
-											player.setMark("ffsancai",0)
-										}										
-									}
-								},
-								intro: {
-									name: "散财X减少",
-									content: function (storage, player) {
-										return
-									},
-								},
-								marktext: "财",																		
+								},																
 							}
 						},
 					};					
