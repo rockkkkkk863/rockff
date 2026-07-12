@@ -505,6 +505,13 @@ export default function () {
 								hp: 3,
 								skills: ['ffxuzuo', "ffqiefu"],
 								img: "extension/重塑系列削弱版/pic/ff_xinlingjun.jpg",									
+							},
+							ff_pingyuanjun:{
+								sex: 'male',
+								group: 'qun',
+								hp: 3,
+								skills: ['ffwenqie', "ffsancai"],
+								img: "extension/重塑系列削弱版/pic/ff_pingyuanjun.jpg",									
 							}																																																																																																																																
 						},																	
 						translate: {
@@ -886,7 +893,12 @@ export default function () {
 							ffxuzuo:"虚左",
 							ffxuzuo_info:"出牌阶段各限一次，若你的手牌数等于空置装备栏数或场上牌数，你可以将手牌数调整至另一项，然后你可以移动场上一张牌。",
 							ffqiefu:"窃符",
-							ffqiefu_info:"每轮开始时，你可以用任意张牌交换一名其他角色至多X+1张牌，当你失去所有因此获得的牌时，重复此效果。(X为你选择的牌数)",																																																																																																																																			
+							ffqiefu_info:"每轮开始时，你可以用任意张牌交换一名其他角色至多X+1张牌，当你失去所有因此获得的牌时，重复此效果。(X为你选择的牌数)",
+							ff_pingyuanjun:"平原君",
+							ffwenqie:"刎妾",
+							ffwenqie_info:"当你造成或受到伤害后，你可令一名本轮造成过伤害的角色将手牌数调整至手牌上限。",
+							ffsancai:"散财",
+							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则本轮X-1。(X为你手牌数/2，向下取整)",																																																																																																																																			
 						},				
 						skill: {
 							//李儒
@@ -11473,6 +11485,153 @@ export default function () {
 										await result.targets[0].gain(result.cards)								
 									}									
 								}															
+							},
+							ffwenqie:{
+								trigger:{
+									source: "damageAfter",
+									player: "damageAfter",
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								filter(event,player){
+									return game.hasPlayer(function (target) {
+										return target.isAlive() && target.hasHistory('damage');
+									});								
+								},
+								async content(event, trigger, player) {
+									var result = await player.chooseTarget()
+										.set("filterTarget", function (card, player, target) {
+											return target.getRoundHistory('sourceDamage').length > 0
+										})
+										.set("selectTarget", 1)
+										.set("prompt", "令一名角色将手牌调整至手牌上限")
+										.forResult();
+									if(result.bool){
+										var a = result.targets[0].countCards("h")
+										var b = result.targets[0].getHandcardLimit()
+										if (a > b) { await result.targets[0].chooseToDiscard(a - b,true) }
+										else { await result.targets[0].drawTo(b) }	
+									}								
+								},
+							},
+							ffsancai:{
+								audio: "ext:重塑系列削弱版/audio:2",
+								enable: ["chooseToUse"],
+								log:false,
+								delay:false,
+								group:["ffsancai_remove","ffsancai_mark"],
+								filter: function (event, player) {
+									var hl = Math.floor(player.countCards('h') / 2) - player.countMark("ffsancai")
+									if ( _status.discarded.length < hl||hl <= 0) {
+										return false
+									}
+									for (var name of lib.inpile) {
+										if (event.filterCard({ name: name, isCard: true }, player, event)) return true;
+									}
+								},
+								onChooseToUse(event) {
+									if (!game.online && !event.ffsancai) {
+										var list = get.inpileVCardList(info => {
+											return ["basic","trick"].includes(info[0])
+										})
+										event.set("ffsancai", list);
+									}
+								},
+								chooseButton: {
+									dialog: function (event, player) {
+										const list = event.ffsancai;
+										return ui.create.dialog(`散财`, [list, "vcard"])
+									},
+									filter: function (button, player) {
+										return _status.event.getParent().filterCard({ name: button.link[2] }, player, _status.event.getParent());
+									},
+									backup: function (links, player) {
+										return {
+											async precontent(event, trigger, player) {
+												player.logSkill("ffsancai");
+												var cards = _status.discarded
+												var hl = Math.floor(player.countCards('h') / 2) - player.countMark("ffsancai")
+												var result = await player.chooseButton(["散财：分配中央区X张牌", cards], true , hl).forResult()
+												await player.gain(result.links)
+												await player.addGaintag(result.links, "散财")												
+												while (player.getCards("he", card => card.hasGaintag("散财")).length > 0) {
+													let result = await player.chooseCardTarget({
+														position: "h",
+														filterCard(card, player) {
+															return card.hasGaintag("散财")
+														},
+														selectCard: [1, Infinity],
+														forced: true,
+														selectTarget: 1,
+														prompt: "散财：请分配这些牌"
+													}).forResult()
+													if (!result || !result.bool || !result.cards || !result.targets.length) {
+														break;
+													}
+													if (result.targets[0] == player) {
+														player.removeGaintag("散财", result.cards);
+													} else {
+														await player.give(result.cards, result.targets[0]);
+													}
+												}
+												var cards2 = _status.discarded
+												var hl2 = Math.floor(player.countCards('h') / 2) - player.countMark("ffsancai")										
+												if (hl2 != cards2.length) {
+													player.addMark("ffsancai",1)
+													const evt = event.getParent();
+													evt.set("ffsancai", true);
+													evt.goto(0);
+													delete evt.openskilldialog;
+													return;
+												}else{
+													event.result.card.cards = cards2 
+													event.result.cards = cards2 
+												}
+											},											
+											audio: "ffsancai",
+											filterCard: () => false,
+											selectCard: -1,
+											popname: true,
+											viewAs: { name: links[0][2], nature: links[0][3], isCard: true, },
+										}
+									},
+								},
+								hiddenCard: function (player, name) {
+									if (!lib.inpile.includes(name)) return false;
+									var type = get.type2(name);
+									return ["trick","basic"].includes(type);
+								},
+								subSkill:{
+									"remove":{
+										trigger:{
+											player:"useCardAfter",
+										},
+										filter(event,player){
+											return event.skill == "ffsancai_backup"
+										},
+										forced:true,
+										popup:false,
+										async content(event, trigger, player) {
+											await player.addToExpansion(player, "gain2", trigger.cards).set("gaintag", ["ffsancai"]);
+										}
+									},
+									"mark":{
+										trigger:{
+											global:"roundEnd",
+										},
+										forced:true,
+										popup:false,
+										async content(event, trigger, player) {
+											player.setMark("ffsancai",0)
+										}										
+									}
+								},
+								intro: {
+									name: "散财X减少",
+									content: function (storage, player) {
+										return
+									},
+								},
+								marktext: "财",																		
 							}
 						},
 					};					
@@ -11538,6 +11697,7 @@ export default function () {
 					type: "players", data: [
 						"ff_chunshenjun",
 						"ff_xinlingjun",
+						"ff_pingyuanjun",
 					]
 				},
 				{
