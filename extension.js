@@ -11149,7 +11149,6 @@ export default function () {
 											player: "useCardAfter",
 										})
 											.step(async (event, trigger, player) => {
-												player.removeSkill("ffmanqigai_sha")
 												if (!player.hasHistory("sourceDamage", function (evt) {
 													return evt.card == trigger.card
 												})) {
@@ -11158,6 +11157,9 @@ export default function () {
 											})
 										await player.drawTo(player.maxHp)
 										await player.chooseUseTarget({ name: "huogong", storage: { fffenquan: 1 } }, true, false)
+										if(!player.hasSkill('fffenquan')){
+											player.setMark("fffenquan", 1)
+										}
 									}
 								},
 							},
@@ -11252,7 +11254,11 @@ export default function () {
 									var index = player.skills.indexOf('ffzhiheng')
 									player.markAuto("ffzhiheng", index)
 									await player.discard(event.cards)
-									await player.draw(event.cards.length)
+									if(player.countCards("h") == 0){
+										await player.draw(event.cards.length + 1)
+									}else{
+										await player.draw(event.cards.length)
+									}
 								},
 								subSkill: {
 									"re": {
