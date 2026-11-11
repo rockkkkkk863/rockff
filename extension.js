@@ -763,7 +763,7 @@ export default function () {
 							ff_xiexuangai:"谢玄",
 							ffjiebinggai:"皆兵",
 							ffjiebinggai_backup:"皆兵",
-							ffjiebinggai_info:"当你需要使用牌时，你可以将一张牌当【铁索连环】使用，因此重置的角色手牌均视为你需要使用的牌直到其使用下一张手牌，若此时为你的回合外，此技能本回合失效。",
+							ffjiebinggai_info:"当你需要使用牌时，你可以将一张牌当【铁索连环】使用，因此重置的角色的当前手牌均视为你需要使用的牌直到其使用下一张手牌，若此时为你的回合外，此技能本回合失效。",
 							ffshuzegai:"树泽",
 							ffshuzegai_info:"每回合每项限一次，当你翻至正面/解除横置/脱离醉酒状态时，你可以视为使用一张【桃】或【五谷丰登】。",	
 							ff_wangyigai:"王异",
@@ -801,7 +801,7 @@ export default function () {
 							ffshizhenggai_heart:"♥️",
 							ffshizhenggai_diamond:"♦️",
 							ffxuanfeigai:"玄非",
-							ffxuanfeigai_info:"锁定技，你使用牌时，移出前x个区域内与该牌同花色的牌：1.你手牌区。2.本回合弃牌堆。3.目标的区域。若未移出牌，你分配所有移出牌。(X为你本回合使用过牌的类型数)",
+							ffxuanfeigai_info:"锁定技，你使用或打出牌时，移出前x个区域内与该牌同花色的牌：1.你手牌区。2.本回合弃牌堆。3.目标的区域。若未移出牌，你分配所有移出牌。你的回合外，你可以如手牌般使用或打出移出牌。(X为你本回合使用过牌的类型数)",
 							ff_fazheng_gai:"法正",
 							fflifeigai:"罹诽",
 							fflifeigai_info:"锁定技，你的场上有牌时，你无法使用手牌。",
@@ -896,7 +896,7 @@ export default function () {
 							ffqiefu_info:"每轮开始时，你可以用任意张牌交换一名其他角色至多X+1张牌，当你失去所有因此获得的牌时，重复此效果。(X为你选择的牌数)",
 							ff_pingyuanjun:"平原君",
 							ffwenqie:"刎妾",
-							ffwenqie_info:"当你造成或受到伤害后，你可令一名本轮造成过伤害的角色将手牌数调整至手牌上限。",
+							ffwenqie_info:"当你造成或受到伤害后，你可令一名角色将手牌数调整至手牌上限。",
 							ffsancai:"散财",
 							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则此技能本回合失效。(X为你手牌数/2，向下取整)",																																																																																																																																			
 						},				
@@ -7472,7 +7472,7 @@ export default function () {
 										},
 										forced: true,
 										async content(event, trigger, player) {
-											for(let i=0;i<player.countMark("fflilungai_use",1);i++){
+											for(let i=0;i<player.countMark("fflilungai_use");i++){
 												var cards = [];
 												var card = get.cardPile(function (card) { return player.hasUseTarget(card, true, true) });
 												if (card) { cards.push(card) };
@@ -7644,6 +7644,7 @@ export default function () {
 												for (var i = 0; i < a.length; i++) {
 													if (!a[i].isLinked()) {
 														a[i].removeSkill("ffjiebinggai_s")
+														a[i].addGaintag(a[i].getCards("h"), "皆兵")
 														a[i].addSkill("ffjiebinggai_s")
 														a[i].markAuto("ffjiebinggai_s", links[0][2])
 													}
@@ -7690,12 +7691,15 @@ export default function () {
 										forced: true,
 										popup: false,
 										async content(event, trigger, player) {
+											player.removeGaintag("皆兵",player.getCards("h"))
 											player.removeSkill("ffjiebinggai_s")
 										},
 										onremove: true,
 										mod: {
 											cardname(card, player) {
-												return player.getStorage("ffjiebinggai_s")[0];
+												if (card.hasGaintag("皆兵")) {
+													return player.getStorage("ffjiebinggai_s")[0]
+												}
 											},
 										},
 									},
@@ -8500,21 +8504,24 @@ export default function () {
 							},
 							ffxuanfeigai: {
 								trigger: {
-									player: "useCard"
+									player: ["useCard","respond"],
 								},
+								group:["ffxuanfeigai_use"],
 								audio: "olchenshuo",
 								forced: true,
 								locked: true,
 								async content(event, trigger, player) {
 									var suit = get.suit(trigger.card)
-									var num = player.getHistory("useCard").reduce((list, evt) => list.add(get.type2(evt.card)), []).length
+									var num1 = player.getHistory("useCard").reduce((list, evt) => list.add(get.type2(evt.card)), [])
+									var num2 = player.getHistory("respond").reduce((list, evt) => list.add(get.type2(evt.card)), [])
+									var num = [...new Set([...num1, ...num2])].length;
 									var a = 0
 									if (num > 0) {
 										var cards = player.getCards("h", card => get.suit(card) == suit)
 										if (cards.length > 0) {
 											a++
 										}
-										await player.addToExpansion(player, "give", cards)
+										await player.addToExpansion(player, "gain2", cards).set("gaintag", ["ffxuanfei"]);
 									}
 									if (num > 1) {
 										var cards = _status.discarded.filter(card => get.suit(card) == suit);
@@ -8522,11 +8529,11 @@ export default function () {
 											a++
 										}
 										player.gain(cards)
-										await player.addToExpansion(player, "give", cards)
+										await player.addToExpansion(player, "gain2", cards).set("gaintag", ["ffxuanfei"]);
 									}
-									if (num > 2) {
+									if (num > 2 && trigger.targets?.length > 0) {
 										const targets = game.players.sortBySeat().slice();
-										for (let target of targets) {
+										for (let target of trigger.targets) {
 											if (target == player) {
 												continue;
 											}
@@ -8535,11 +8542,11 @@ export default function () {
 												a++
 											}
 											player.gain(cards)
-											await player.addToExpansion(player, "give", cards)
+											await player.addToExpansion(player, "gain2", cards).set("gaintag", ["ffxuanfei"]);
 										}
 									}
 									if (a == 0) {
-										var a = player.getCards("x")
+										var a = player.getExpansions("ffxuanfei")
 										await player.gain(a)
 										await player.addGaintag(a, "玄非")
 										while (player.getCards("h", card => card.hasGaintag("玄非")).length > 0) {
@@ -8562,7 +8569,58 @@ export default function () {
 											await player.give(result.cards, result.targets[0]);
 										}
 									}
-								}
+								},
+								subSkill:{
+									"use":{
+										enable: ["chooseToUse","chooseToRespond"],
+										hiddenCard(player, name) {
+											var tar = game.filterPlayer(function (target) {
+												return target.hasSkill('ffxuanfeigai');
+											});
+											if (tar[0].getExpansions("ffxuanfei").some(card => card.name == name)) {
+												return true;
+											}
+										},
+										filter: function (event, player) {
+											if (event.responded || event.ffxuanfeigai_use) {
+												return false;
+											}
+											if(_status.currentPhase == player){
+												return false;
+											}
+											return player.getExpansions("ffxuanfei").some(card => event.filterCard(card, player, event));
+										},
+										chooseButton: {
+											dialog(event, player) {
+												return ui.create.dialog("玄非", player.getExpansions("ffxuanfei"), "hidden");
+											},
+											filter(button, player) {
+												const evt = _status.event.getParent();
+												return evt.filterCard(button.link, player, evt);
+											},
+											check(button) {
+												const card = button.link,
+													player = get.player();
+												return player.getUseValue(card);
+											},
+											backup(links, player) {
+												return {
+													audio: "ffxuanfeigai",
+													filterCard(card) {
+														return card === lib.skill.ffxuanfeigai_use_backup.card;
+													},
+													selectCard: -1,
+													viewAs: links[0],
+													card: links[0],
+													position: "x",
+												};
+											},
+											prompt(links, player) {
+												return "玄非：请选择" + get.translation(links[0]) + "的目标";
+											},
+										},																		
+									}
+								},								
 							},
 							fflifeigai: {
 								mod: {
@@ -11498,16 +11556,16 @@ export default function () {
 									player: "damageAfter",
 								},
 								audio: "ext:重塑系列削弱版/audio:2",
-								filter(event,player){
+								/*filter(event,player){
 									return game.hasPlayer(function (target) {
 										return target.isAlive() && target.hasHistory('damage');
 									});								
-								},
+								},*/
 								async content(event, trigger, player) {
 									var result = await player.chooseTarget()
-										.set("filterTarget", function (card, player, target) {
+										/*.set("filterTarget", function (card, player, target) {
 											return target.getRoundHistory('sourceDamage').length > 0
-										})
+										})*/
 										.set("selectTarget", 1)
 										.set("prompt", "令一名角色将手牌调整至手牌上限")
 										.forResult();
@@ -11522,7 +11580,6 @@ export default function () {
 							ffsancai:{
 								audio: "ext:重塑系列削弱版/audio:2",
 								enable: ["chooseToUse"],
-								usable:3,
 								log:false,
 								delay:false,
 								group:["ffsancai_remove"],
@@ -11686,9 +11743,6 @@ export default function () {
 				},
 				{
 					type: "players", data: [
-						"ff_chunshenjun",
-						"ff_xinlingjun",
-						"ff_pingyuanjun",
 					]
 				},
 				{
@@ -11697,9 +11751,8 @@ export default function () {
 				},
 				{
 					type: "players", data: [
-						"ffyangzhen_gai",
-						"ffsunshangxianggai",
-						"ff_mengchangjun",
+						"ff_zhouqungai",
+						"ff_xiexuangai",
 					]
 				},
 			];
