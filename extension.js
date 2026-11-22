@@ -5873,16 +5873,17 @@ export default function () {
 								},
 								limited: true,
 								group: ["ffjinmiegai_mark"],
-								audio: "olsbfenchao",
+								audio: "olsbfenchao",						
 								filter(event, player) {
 									return player.countMark("ffjinmiegai_mark") > 2 && event.targets.length > 0 && player.countMark("ffjucuigai_mark") == 0
 								},
-								async content(event, trigger, player) {
+								async content(event, trigger, player) {														
 									player.addMark("ffjucuigai_mark", 1)
-									player.setMark("ffjinmiegai_mark", 0);
+									player.setMark("ffjinmiegai_mark", 0);																						
 									var result = await player.chooseTarget()
-										.set("filterTarget", function (card, player, target) {
-											return trigger.targets.includes(target)
+										.set("x",trigger.targets)
+										.set("filterTarget", function (card, player, target,x) {
+											return get.event().x.includes(target)
 										})
 										.set("selectTarget", [1, Infinity])
 										.set("forced", true)
@@ -11583,23 +11584,25 @@ export default function () {
 								log:false,
 								delay:false,
 								group:["ffsancai_remove"],
-								filter: function (event, player) {
-									var hl = Math.floor(player.countCards('h') / 2)
-									if ( _status.discarded.length < hl||hl <= 0) {
-										return false
-									}
-									for (var name of lib.inpile) {
-										if (event.filterCard({ name: name, isCard: true }, player, event)) return true;
-									}
-								},
 								onChooseToUse(event) {
 									if (!game.online && !event.ffsancai) {
 										var list = get.inpileVCardList(info => {
 											return ["basic","trick"].includes(info[0])
 										})
+										event.set("ffsancai_cards", _status.discarded);
 										event.set("ffsancai", list);
 									}
 								},
+								filter: function (event, player) {
+									var hl = Math.floor(player.countCards('h') / 2)
+									const cards = event.ffsancai_cards;
+									if ( cards.length < hl||hl <= 0) {
+										return false
+									}
+									for (var name of lib.inpile) {
+										if (event.filterCard({ name: name, isCard: true }, player, event)) return true;
+									}
+								},								
 								chooseButton: {
 									dialog: function (event, player) {
 										const list = event.ffsancai;
