@@ -512,6 +512,13 @@ export default function () {
 								hp: 3,
 								skills: ['ffwenqie', "ffsancai"],
 								img: "extension/重塑系列削弱版/pic/ff_pingyuanjun.jpg",									
+							},
+							ff_leyi:{
+								sex: 'male',
+								group: 'qun',
+								hp: 4,
+								skills: ['fflianke', "ffjiaozhen","ffbaoshu"],
+								img: "extension/重塑系列削弱版/pic/ff_leyi.jpg",									
 							}																																																																																																																																
 						},																	
 						translate: {
@@ -898,7 +905,14 @@ export default function () {
 							ffwenqie:"刎妾",
 							ffwenqie_info:"当你造成或受到伤害后，你可令一名角色将手牌数调整至手牌上限。",
 							ffsancai:"散财",
-							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则此技能本回合失效。(X为你手牌数/2，向下取整)",																																																																																																																																			
+							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则此技能本回合失效。(X为你手牌数/2，向下取整)",	
+							ff_leyi:"乐毅",
+							fflianke:"连克",
+							fflianke_info:"当你造成伤害后，你可以展示牌堆顶或受伤角色的一张牌并使用该牌，否则弃置之。",
+							ffjiaozhen:"缴珍",
+							ffjiaozhen_info:"出牌阶段限一次或每回合结束时，你可以任意交换：牌堆顶X张牌；中央区X张牌；一名角色的X张手牌。(X为本回合所有角色受到过的伤害值之和)",
+							ffbaoshu:"报书",
+							ffbaoshu_info:"当你的体力值变为1时，你可以将一张牌当任意伤害牌使用。",																																																																																																																																		
 						},				
 						skill: {
 							//李儒
@@ -11683,6 +11697,139 @@ export default function () {
 										}
 									},
 								},																
+							},
+							fflianke:{
+								trigger:{
+									source: "damageAfter",
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								async content(event, trigger, player) {
+									const choices = ['牌堆顶', '受伤角色手牌'];
+									if (trigger.player.countCards("h") == 0) {
+										choices.remove("选项二");
+									}									
+									var result2 = await player
+										.chooseControl()
+										.set('controls', choices)
+										.set("prompt", "展示牌堆顶或受伤角色的一张牌")
+										.forResult();
+									if (result2.control == "牌堆顶") {
+										const cards = game.cardsGotoOrdering(get.cards()).cards;
+										player.showCards(cards);
+										if(player.hasUseTarget(cards[0],true,false)){
+											await player.chooseUseTarget(cards[0],true,false)
+										}else{player.discard(cards)}								
+									}else if(result2.control == "受伤角色手牌"){
+										var result = await player.choosePlayerCard(trigger.player,"h",true,1).forResult();
+										player.showCards(result.cards[0]);
+										if(player.hasUseTarget(result.cards[0],true,false)){
+											await player.chooseUseTarget(result.cards[0],true,false)
+										}else{trigger.player.discard(result.cards[0])}
+									}																
+								},								
+							},
+							ffjiaozhen:{
+								trigger:{
+									global: "phaseEnd",
+								},
+								enable: "phaseUse",
+								usable:1,
+								filter(event,player){
+									const targets = get.players(null, true)
+									for (let target of targets) {
+										if(target.getHistory("damage").length > 0)return true
+									}
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								async content(event, trigger, player) {
+									var result = await player.chooseTarget()
+										.set("selectTarget", 1)
+										.set("prompt", "缴珍：请选择一名角色")
+										.forResult()
+									if (result.bool) {									
+										var count = 0;
+										const targets = get.players(null, true)
+										for (let target of targets) {
+											var list = target.getHistory("damage")
+											for (var i = 0; i < list.length; i++) {
+  												count += list[i].num;
+											}	
+										}
+										var dis = Math.min(count, _status.discarded.length);
+										var tar = Math.min(count, result.targets[0].countCards("h"));
+										var result2 = await player.choosePlayerCard(result.targets[0],"h",true,tar).forResult();
+										const cards1 = get.cards(count);
+										const cards2 = _status.discarded.randomGets(dis);
+										const cards3 = result2.cards;
+										const lose_list=[];
+										lose_list.push([result.targets[0],cards3]);
+										game.cardsGotoOrdering(cards1,cards2);
+										await game
+										.loseAsync({
+											lose_list:lose_list,
+										})
+										.setContent("chooseToCompareLose");
+										var result3 = await player.chooseToMove()
+											.set("list",[["牌堆顶",cards1],["中央区",cards2],[`${result.targets[0].getName()}的手牌`,cards3]])
+											.set("prompt","任意交换这些牌")
+											.set("filterMove",function(from,to,moved){
+												return typeof to != "number";
+											})
+											.set("forced",true)
+											.forResult();
+										var top = result3.moved[0];
+										var dis = result3.moved[1];
+										var hand = result3.moved[2];
+										top.reverse();
+										if (top.length) {
+											await player.lose(cards1, ui.cardPile);
+											for (let i = 0; i < top.length; i++) {
+												const card = top[i];
+												card.fix();
+												ui.cardPile.insertBefore(card, ui.cardPile.firstChild);
+											}
+										}
+										await player.discard(dis)
+										const gain_list = [];
+										if(hand.length){
+											gain_list.push([result.targets[0],hand])
+										}
+										game.loseAsync({
+											gain_list:gain_list,
+											giver:player,
+											animate:"gain2",
+										}).setContent("gaincardMultiple");											
+									}
+								},									
+							},
+							ffbaoshu:{
+								trigger:{
+									player: "changeHp"
+								},
+								filter(event,player){
+									return player.hp == 1
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								async content(event, trigger, player) {
+									var list = get.inpileVCardList(info => {
+										return ["trick"].includes(info[0]) 
+									});								
+									var list2 = [];
+									for (var i = 0; i < list.length; i++) {
+										var name = list[i][2];
+										const card = get.autoViewAs({ name }, "unsure")
+										if (get.type(name) == 'trick' && get.tag(card, "damage")) list2.push(['锦囊', '', name]);
+									}
+									list2.push(['基本', '', "sha"]);
+									const result = await player.chooseButton([`将一张牌当伤害牌使用`, [list2, "vcard"]]).forResult();
+									if (result.bool) {
+										var result2 = await player.chooseCard()
+											.set("position", "he")
+											.set("selectCard", 1)
+											.forResult();										
+										await player.chooseUseTarget(result2.cards,result.links[0][2], true, false);
+									}																	
+								}
 							}
 						},
 					};					
@@ -11746,6 +11893,7 @@ export default function () {
 				},
 				{
 					type: "players", data: [
+						"ff_leyi",
 					]
 				},
 				{
