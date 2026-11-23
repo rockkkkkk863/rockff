@@ -11706,7 +11706,7 @@ export default function () {
 								async content(event, trigger, player) {
 									const choices = ['牌堆顶', '受伤角色手牌'];
 									if (trigger.player.countCards("h") == 0) {
-										choices.remove("选项二");
+										choices.remove("受伤角色手牌");
 									}									
 									var result2 = await player
 										.chooseControl()
@@ -11744,6 +11744,9 @@ export default function () {
 								async content(event, trigger, player) {
 									var result = await player.chooseTarget()
 										.set("selectTarget", 1)
+										.set("filterTarget", function (card, player, target) {
+											return target.countCards("h") > 0
+										})										
 										.set("prompt", "缴珍：请选择一名角色")
 										.forResult()
 									if (result.bool) {									
