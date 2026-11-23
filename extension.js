@@ -11090,7 +11090,8 @@ export default function () {
 													game.broadcastAll((p) => {
 														game.playAudio(`../extension/重塑系列削弱版/audio/ffdanqigai${[2].randomGet()}.mp3`);
 													}, player);													
-												}												
+												}
+												const links = lib.skill.ffdanqigai_backup.links											
 												player.markAuto("ffdanqigai_use",links[0][2])
 												player.logSkill("ffdanqigai");
 												const card = get.cards(1, true)[0];
@@ -11113,6 +11114,7 @@ export default function () {
 											selectCard: -1,
 											popname: true,
 											viewAs: { name: links[0][2], nature: links[0][3], isCard: true, },
+											links:links,
 										}
 									},
 								},
@@ -11327,11 +11329,7 @@ export default function () {
 									var index = player.skills.indexOf('ffzhiheng')
 									player.markAuto("ffzhiheng", index)
 									await player.discard(event.cards)
-									if(player.countCards("h") == 0){
-										await player.draw(event.cards.length + 1)
-									}else{
-										await player.draw(event.cards.length)
-									}
+									await player.draw(event.cards.length)
 								},
 								subSkill: {
 									"re": {
@@ -11907,6 +11905,7 @@ export default function () {
 					type: "players", data: [
 						"ff_zhouqungai",
 						"ff_xiexuangai",
+						"ff_mengchangjun",
 					]
 				},
 			];
