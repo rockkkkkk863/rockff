@@ -11542,7 +11542,7 @@ export default function () {
 										return false
 									}
 									for(var i=0;i<event.cards.length;i++){
-										return player.countCards("h", (card) => card.hasGaintag("eternal_窃符")) == 0 && event.cards[i].hasGaintag("eternal_窃符")
+										if(player.countCards("h", (card) => card.hasGaintag("eternal_窃符")) == 0 && event.cards[i].hasGaintag("eternal_窃符"))return true
 									} 							
 								},
 								async content(event, trigger, player) {
