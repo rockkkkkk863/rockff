@@ -519,6 +519,13 @@ export default function () {
 								hp: 4,
 								skills: ['fflianke', "ffjiaozhen","ffbaoshu"],
 								img: "extension/重塑系列削弱版/pic/ff_leyi.jpg",									
+							},
+							ff_tiandan:{
+								sex: 'male',
+								group: 'qun',
+								hp: 4,
+								skills: ['ffshenshi', "ffhuoniu"],
+								img: "extension/重塑系列削弱版/pic/ff_tiandan.jpg",								
 							}																																																																																																																																
 						},																	
 						translate: {
@@ -912,7 +919,12 @@ export default function () {
 							ffjiaozhen:"缴珍",
 							ffjiaozhen_info:"出牌阶段限一次或每回合结束时，你可以任意交换：牌堆顶X张牌；中央区X张牌；一名角色的X张手牌。(X为本回合所有角色受到过的伤害值之和)",
 							ffbaoshu:"报书",
-							ffbaoshu_info:"当你的体力值变为1时，你可以将一张牌当任意伤害牌使用。",																																																																																																																																		
+							ffbaoshu_info:"当你的体力值变为1时，你可以将一张牌当任意伤害牌使用。",
+							ff_tiandan:"田单",
+							ffshenshi:"神师",
+							ffshenshi_info:"锁定技，你失去所有起始手牌前，获得的非基本牌替换为随机基本牌；否则获得的基本牌替换为随机非基本牌。",
+							ffhuoniu:"火牛",
+							ffhuoniu_info:"锁定技，你使用【火杀】无次数限制；你可以使用并移出弃牌堆中的火属性伤害牌；一名角色受到火属性伤害后，你摸一张牌。",																																																																																																																																		
 						},				
 						skill: {
 							//李儒
@@ -11808,7 +11820,7 @@ export default function () {
 									player: "changeHp"
 								},
 								filter(event,player){
-									return player.hp == 1
+									return player.hp == 1 && player.countCards("he") > 0
 								},
 								audio: "ext:重塑系列削弱版/audio:2",
 								async content(event, trigger, player) {
@@ -11827,11 +11839,118 @@ export default function () {
 										var result2 = await player.chooseCard()
 											.set("position", "he")
 											.set("selectCard", 1)
+											.set("forced",true)
 											.forResult();										
 										await player.chooseUseTarget(result2.cards,result.links[0][2], true, false);
 									}																	
 								}
-							}
+							},
+							ffshenshi:{
+								trigger: {
+									player: ["gainAfter"],
+									global: "phaseBefore",
+								},
+								forced:true,
+								filter(event,player){
+									if (event.name != "phase") {
+										if(player.countCards("h",card => card.hasGaintag("神师")) > 0){
+											for (let i = 0; i < event.cards.length; i++) {
+												if(get.type(event.cards[i]) != "basic")return true
+											}											
+										}else{
+											for (let i = 0; i < event.cards.length; i++) {
+												if(get.type(event.cards[i]) == "basic")return true
+											}											
+										}
+									} else {
+										return game.phaseNumber == 0
+									}									
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								async content(event, trigger, player) {
+									if (trigger.name == "phase") {
+										await player.addGaintag(player.getCards("h"),"神师")
+									}else{
+										var cards = []
+										var gets = []
+										if(player.countCards("h",card => card.hasGaintag("神师")) > 0){
+											for (let i = 0; i < trigger.cards.length; i++) {
+												if(get.type(trigger.cards[i]) != "basic"){
+													cards.add(trigger.cards[i])
+												}
+											}
+											await player.discard(cards)
+											for (let i = 0; i < cards.length; i++) {
+												var card1 = get.cardPile(function(card){return get.type(card) == "basic" && !gets.includes(card)});
+												if(card1){gets.push(card1)}else{
+													var card1 = get.discardPile(function(card){return get.type(card) == "basic" && !gets.includes(card)})
+													gets.push(card1)
+												};
+											}
+											if(gets.length){player.gain(gets,"gain2","log");}											
+										}else{
+											for (let i = 0; i < trigger.cards.length; i++) {
+												if(get.type(trigger.cards[i]) == "basic"){
+													cards.add(trigger.cards[i])
+												}
+											}
+											await player.discard(cards)	
+											for (let i = 0; i < cards.length; i++) {
+												var card1 = get.cardPile(function(card){return get.type(card) != "basic" && !gets.includes(card)});
+												if(card1){gets.push(card1)}else{
+													var card1 = get.discardPile(function(card){return get.type(card) != "basic" && !gets.includes(card)})
+													gets.push(card1)
+												};
+											}
+											if(gets.length){player.gain(gets,"gain2","log");}																						
+										}										
+									}									
+								}																
+							},
+							ffhuoniu:{
+								enable: "phaseUse",
+								group:["ffhuoniu_draw"],
+								filter(event,player){
+									const cards = Array.from(ui.discardPile.childNodes).slice(0);
+									for (const card of cards) {
+										if(get.nature(card) == "fire" || get.name(card) == "huogong")return true
+									}									
+								},
+								audio: "ext:重塑系列削弱版/audio:2",
+								async content(event, trigger, player) {
+									const cards = Array.from(ui.discardPile.childNodes).slice(0);
+									const cardsx = cards.filter(card => get.nature(card) == "fire" || get.name(card) == "huogong");
+									const result = await player
+										.chooseButton([`火牛：使用其中一张牌`, cardsx], true, 1)
+										.forResult();
+									if (result?.bool && result.links?.length && player.hasUseTarget(result.links[0],true,false)) {
+										await player.chooseUseTarget(result.links[0],true,false)
+										await player.addToExpansion(player, "gain2", result.links[0]).set("gaintag", ["ffhuoniu"]);
+									}																			
+								},
+								mod: {
+									cardUsable(card) {
+										if (get.nature(card) == "fire") {
+											return Infinity;
+										}
+									},
+								},
+								subSkill:{
+									"draw":{
+										trigger:{
+											global: "damageEnd",
+										},
+										forced:true,
+										filter(event,player){
+											return event.hasNature("fire")
+										},
+										audio: "ext:重塑系列削弱版/audio:2",
+										async content(event, trigger, player) {
+											await player.draw(1)
+										},
+									}
+								},																
+							},
 						},
 					};					
 					/*if(lib.device||lib.node){
@@ -11895,6 +12014,7 @@ export default function () {
 				{
 					type: "players", data: [
 						"ff_leyi",
+						"ff_tiandan",
 					]
 				},
 				{
