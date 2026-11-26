@@ -85,7 +85,7 @@ export default function () {
 								sex: "male",
 								group: "wei",
 								hp: 3,
-								skills: ["ffxianmou", "new_reyiji"],
+								skills: ["ffxianmou", "ffgujuegai"],
 								img: "extension/重塑系列削弱版/pic/ffguojiagai.jpg",
 							},
 							ffsunshangxianggai: {
@@ -110,13 +110,13 @@ export default function () {
 								skills: ["ffluanchenggai", "fffujigai"],
 								img: "extension/重塑系列削弱版/pic/ffjiaxugai.jpg",
 							},
-							ffxuyougai: {
+							/*ffxuyougai: {
 								sex: "male",
 								group: "wei",
 								hp: 3,
 								skills: ["ffshigonggai", "ffqingmangai", "ffsiyangai"],
 								img: "extension/重塑系列削弱版/pic/ffxuyougai.jpg",
-							},
+							},*/
 							ffgaotanglonggai: {
 								sex: "male",
 								group: "wei",
@@ -175,13 +175,13 @@ export default function () {
 								skills: ["ffyaofa","ffjiyao"],
 								img: "extension/重塑系列削弱版/pic/ffyujigai.jpg",
 							},
-							ff_xiahoudungai: {
+							/*ff_xiahoudungai: {
 								sex: "male",
 								group: "wei",
 								hp: 4,
 								skills: ["ffshimugai", "ffbujigai"],
 								img: "extension/重塑系列削弱版/pic/ffxiahoudungai.jpg",
-							},
+							},*/
 							ff_yangzhengai: {
 								sex: "male",
 								group: "qun",
@@ -580,6 +580,8 @@ export default function () {
 							ffguojiagai: "郭嘉",
 							ffxianmou: "先谋",
 							ffxianmou_info: "转换技，你的判定牌/手牌离开处理区/手牌区时，你可将失去方式改为①使用：②分配；③卜算。",
+							ffgujuegai:"孤决",
+							ffgujuegai_info:"当你受到1点伤害后，你可以弃置一种花色的所有手牌并获得中央区的一张即时牌。",
 							ffsunshangxianggai: "孙尚香",
 							ffjianwugai: "剑舞",
 							ffjianwugai_info: "吴势力技，当一张装备牌进入弃牌堆时，你可以重铸任意张牌并获得之。若你以此法重铸了非基本牌，变更势力为【蜀】并回复一点体力。",
@@ -608,7 +610,7 @@ export default function () {
 							ffzaijiegai: "灾诫",
 							ffzaijiegai_info: "当一名角色受到伤害后，若其有手牌，你可以令其发动一次【明鉴】与【恢拓】。",
 							ffgongquegai: "宫鹊",
-							ffgongquegai_info: "出牌阶段各限一次，你可以令手牌数全场唯一最多/最少的角色将一张牌当【五谷丰登】/无中声音使用，重复此操作直到该角色手牌数不为全场最多/最少。",
+							ffgongquegai_info: "出牌阶段各限一次，你可以令手牌数全场唯一最多/最少的角色将一张牌当【五谷丰登】/【无中生有】使用，重复此操作直到该角色手牌数不为全场最多/最少。",
 							ffsimayigai: "司马懿",
 							fflanggugai: "狼顾",
 							fflanggugai_info: "你可以观看并使用牌堆顶/底的牌，若与上次使用的方向不同，你变更势力至晋/魏。",
@@ -703,7 +705,7 @@ export default function () {
 							ffjieyigai: "解衣",
 							ffjieyigai_info: "转换技，①你可以记录手牌数以视为使用【无懈可击】②你可以将手牌数调整至记录值以视为使用你使用的上一张牌。",
 							fffenyinggai: "焚营",
-							fffenyinggai_info: "出牌阶段限两次，你可以将任意张手牌当【火攻】使用，若造成伤害，你交换手牌与中央区。",
+							fffenyinggai_info: "出牌阶段限一次，你可以将任意张手牌当【火攻】使用，若造成伤害，你交换手牌与中央区。",
 							ff_taishicigai: "太史慈",
 							ffchouyigai: "酬义",
 							ffchouyigai_info: "你的回合内，当其他角色对你使用牌时，你可以调整你或其1点体力。此牌结算后，若你与其体力值相等/不等，你重置/弃两张牌。",
@@ -723,9 +725,9 @@ export default function () {
 							ffjinmiegai_info: "限定技，连招技（锦囊牌+锦囊牌+锦囊牌），你可以对此牌的任意名目标角色各造成1点火焰伤害。",
 							ff_zhuronggai: "祝融",
 							ffmanqigai: "蛮妻",
-							ffmanqigai_info: "出牌阶段限两次，若你的体力值/手牌数/出杀次数均大于0，你可以交换其中的任意两项，然后另一项的数值-1并视为使用一张【南蛮入侵】。",
+							ffmanqigai_info: "出牌阶段限两次，你可以交换体力值/手牌数/出杀次数其中的任意两项，然后另一项的数值-1并视为使用一张【南蛮入侵】。",
 							ffchangbiaogai: "长标",
-							ffchangbiaogai_info: "你可以如手牌般使用或打出一张<b>中央区</b>内的【杀】，然后你移去之并摸一张牌。",
+							ffchangbiaogai_info: "你可以如手牌般使用或打出一张中央区内的【杀】，然后你移去之。",
 							ff_xuexugai: "薛珝",
 							ffkuiruogai: "窥弱",
 							ffkuiruogai_info: "韵律技，每回合限一次，平：当你摸牌后，你可以分配1点伤害；仄：当你造成伤害后，你可以分配牌堆顶一张牌。因此受伤/获得牌的角色下次成为你使用牌的目标时，你对其造成1点伤害/摸一张牌。转韵：展示牌。",
@@ -825,14 +827,14 @@ export default function () {
 							ffzeqigai_info:"锁定技，当你失去最后一张手牌时，你失去武将牌上的前X个技能直到回合结束，然后选择一项并摸X张牌：1.将你场上的所有牌交给一名其他角色。2.弃置任意角色的共计X张牌。(X为你场上牌数)",
 							ff_sp_zhugeliang_gai:"诸葛亮",
 							ffdingmougai:"鼎谋",
-							ffdingmougai_info:"转换技，游戏开始时可自选阴阳状态与天地人状态。你可以将手牌数调整至阳：你的体力值；阴：你已损失体力值以天：视为使用一张卜算因此弃置的牌的【洞烛先机】；地：可弃置因此弃置的牌以生效的【火攻】；人：将因此弃置的牌当一张【无懈可击】使用。",
+							ffdingmougai_info:"转换技，每轮开始时可自选阴阳状态与天地人状态。你可以将手牌数调整至阳：你的体力值；阴：你已损失体力值以天：视为使用一张卜算因此弃置的牌的【洞烛先机】；地：可弃置因此弃置的牌以生效的【火攻】；人：将因此弃置的牌当一张【无懈可击】使用。",
 							ffliaoyuangai:"燎原",
 							ffliaoyuangai_info:"出牌阶段，你可以分配2点火焰伤害，然后你死亡。",	
 							ff_xuhuang_gai:"徐晃",
 							ffshaozigai:"烧辎",
-							ffshaozigai_info:"你可以连接你与目标的共计4张未连接手牌以视为使用【火攻】。若未造成伤害，此技能本回合失效。",
+							ffshaozigai_info:"你可以连接你与目标的共计3张未连接手牌以视为使用【火攻】。若未造成伤害，此技能本回合失效。",
 							ffxuzhangai:"叙斩",
-							ffxuzhangai_info:"出牌阶段限一次，你可以与一名其他角色依次获得中央区的一张牌，重复此操作直到中央区无牌。",	
+							ffxuzhangai_info:"出牌阶段，若中央区有【杀】，你可以弃置一张除【杀】外的牌并获得其中所有【杀】。",	
 							ff_lusu_gai:"鲁肃",
 							fflianliugai:"联刘",
 							fflianliugai_info:"出牌阶段，你可以将所有手牌交给一名其他角色以使用该角色的一张手牌。",
@@ -900,7 +902,7 @@ export default function () {
 							ffzhiheng_info:"出牌阶段限一次，你可以弃置任意张牌并摸等量的牌。",
 							ff_chunshenjun:"春申君",
 							ffjiemu:"接木",
-							ffjiemu_info:"每轮限1次，一名角色于其回合内使用牌时，你可以移出任意张牌并令其改为使用其中一张牌，然后你将手牌数和此技能本轮可发动次数调整至X。(X为被移出的牌数且至多调整5)",
+							ffjiemu_info:"锁定技，每名角色的回合开始时，你移出任意张牌。一名角色使用牌后，你将手牌摸至X。(X为被移出的总牌数且至多摸3张)",
 							ffwuwang:"无妄",
 							ffwuwang_info:"锁定技，一名角色造成伤害后，随机弃置一半的移出牌，然后其本回合可以如手牌般使用或打出被移出的牌。",
 							ff_xinlingjun:"信陵君",
@@ -2040,7 +2042,7 @@ export default function () {
 									player: "damageEnd",
 								},
 								filter: function (event, player) {
-									return player.countCards("h") > 0
+									return player.countCards("h") > 0 && _status.discarded.length > 0
 								},
 								getIndex(event) {
 									return event.num
@@ -2076,8 +2078,8 @@ export default function () {
 									} else if (result.control == "♣️") {
 										await player.discard(player.getCards("h", card => get.suit(card) == "club"));
 									}
-									var cards = [];
-									game.getGlobalHistory("cardMove", function (evt) {
+									var cards = _status.discarded.slice(0);
+									/*game.getGlobalHistory("cardMove", function (evt) {
 										if (evt.name != "lose") {
 											return false;
 										}
@@ -2086,8 +2088,8 @@ export default function () {
 												cards.push(i);
 											}
 										}
-									});
-									var result = await player.chooseButton(["孤决：获得一张基本牌或普通锦囊牌", cards], true).set("ai", function (button) {
+									});*/
+									var result = await player.chooseButton(["孤决：获得中央区的一张牌", cards], true).set("ai", function (button) {
 										return get.value(button.link, _status.event.player);
 									}).forResult()
 									if (result.bool) {
@@ -5532,7 +5534,7 @@ export default function () {
 								enable: "chooseToUse",
 								audio: "sblianying",
 								position: "h",
-								usable: 2,
+								usable: 1,
 								filterCard(card, player) {
 									return true
 								},
@@ -6028,13 +6030,13 @@ export default function () {
 								usable: 2,
 								group: "ffmanqigai_mark",
 								audio: "dcmanhou",
-								filter(event, player) {
+								/*filter(event, player) {
 									var c = player.getHistory("useCard", evt => {
 										return evt.card.name == "sha" && evt.addCount !== false;
 									}).length
 									var b = player.getCardUsable("sha", true) - c
 									return player.countCards("h") > 0 && player.hp > 0 && b > 0
-								},
+								},*/
 								async content(event, trigger, player) {
 									const choices = ["体力", "手牌", "出杀次数"];
 									const choices2 = ["体力", "手牌", "出杀次数"];
@@ -6059,7 +6061,7 @@ export default function () {
 												player.chooseToDiscard(b - a, true)
 											}
 											player.removeMark("ffmanqigai_mark", 1)
-											player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
+											await player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
 										} else if (result2.control == "出杀次数") {
 											var a = player.hp
 											var c = player.getHistory("useCard", evt => {
@@ -6073,8 +6075,10 @@ export default function () {
 												player.recover(b - a)
 												player.setMark("ffmanqigai_mark", a + c)
 											}
-											player.chooseToDiscard(1, true)
-											player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
+											if(player.countCards("h") > 0){
+												await player.chooseToDiscard(1, true)
+											}
+											await player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
 										}
 									} else if (result.control == "手牌") {
 										choices2.remove("手牌")
@@ -6093,7 +6097,7 @@ export default function () {
 												player.chooseToDiscard(b - a, true)
 											}
 											player.removeMark("ffmanqigai_mark", 1)
-											player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
+											await player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
 										} else if (result2.control == "出杀次数") {
 											var a = player.countCards("h")
 											var c = player.getHistory("useCard", evt => {
@@ -6107,8 +6111,8 @@ export default function () {
 												player.drawTo(b)
 												player.setMark("ffmanqigai_mark", a + c)
 											}
-											player.loseHp()
-											player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
+											await player.loseHp()
+											await player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
 										}
 									} else if (result.control == "出杀次数") {
 										choices2.remove("出杀次数")
@@ -6129,8 +6133,10 @@ export default function () {
 												player.recover(b - a)
 												player.setMark("ffmanqigai_mark", a + c)
 											}
-											player.chooseToDiscard(1, true)
-											player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
+											if(player.countCards("h") > 0){
+												await player.chooseToDiscard(1, true)
+											}
+											await player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
 										} else if (result2.control == "手牌") {
 											var a = player.countCards("h")
 											var c = player.getHistory("useCard", evt => {
@@ -6144,8 +6150,8 @@ export default function () {
 												player.drawTo(b)
 												player.setMark("ffmanqigai_mark", a + c)
 											}
-											player.loseHp()
-											player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
+											await player.loseHp()
+											await player.chooseUseTarget({ isCard: false }, { name: "nanman" }, true, false)
 										}
 									}
 								},
@@ -6193,7 +6199,6 @@ export default function () {
 											break
 										}
 									}
-									player.draw()
 								},
 								viewAs: {
 									name: "sha",
@@ -8851,7 +8856,7 @@ export default function () {
 								intro: {
 									content: function (storage, player) {
 										var str = "转换技，你可以将手牌数调整至";
-										if (storage) {
+										if (!storage) {
 											return str + "你的体力值以视为使用";
 										} else {
 											return str + "你已损失体力值以视为使用";
@@ -9077,14 +9082,10 @@ export default function () {
 									},
 									"choose": {
 										trigger: {
-											global: "phaseBefore",
-											player: "enterGame",
+											global: ["roundStart"]
 										},
 										audio: "olsbzhijue",
 										forced: true,
-										filter(event, player) {
-											return event.name != "phase" || game.phaseNumber == 0;
-										},
 										async content(event, trigger, player) {
 											const choices = ["阳", "阴"];
 											var result = await player
@@ -9092,7 +9093,9 @@ export default function () {
 												.set("prompt", "请选择转换技状态")
 												.set("controls", choices)
 												.forResult();
-											if (result.control == "阴") {
+											if (result.control == "阴" && !player.storage.ffdingmougai) {
+												player.changeZhuanhuanji("ffdingmougai")
+											}else if(result.control == "阳" && player.storage.ffdingmougai){
 												player.changeZhuanhuanji("ffdingmougai")
 											}
 											const choices2 = ["天", "地", "人"];
@@ -9101,7 +9104,9 @@ export default function () {
 												.set("prompt", "请选择转换技状态")
 												.set("controls", choices2)
 												.forResult();
-											if (result.control == "地") {
+											if (result.control == "天") {
+												player.setMark("ffdingmougai_mark", 0)
+											}else if (result.control == "地") {
 												player.setMark("ffdingmougai_mark", 1)
 											} else if (result.control == "人") {
 												player.setMark("ffdingmougai_mark", 2)
@@ -9381,22 +9386,22 @@ export default function () {
 										return false
 									}
 									if (target != player) {
-										return target.countCards("h", card => !get.info("_sxrm_connect").isConnect(card)) + player.countCards("h", card => !get.info("_sxrm_connect").isConnect(card)) > 3
+										return target.countCards("h", card => !get.info("_sxrm_connect").isConnect(card)) + player.countCards("h", card => !get.info("_sxrm_connect").isConnect(card)) > 2
 									} else {
-										return player.countCards("h", card => !get.info("_sxrm_connect").isConnect(card)) > 3
+										return player.countCards("h", card => !get.info("_sxrm_connect").isConnect(card)) > 2
 									}
 								},
 								delay: false,
 								log: false,
 								async precontent(event, trigger, player) {
 									player.logSkill("ffshaozigai");
-									var a = 4 - player.countCards("h", card => !get.info("_sxrm_connect").isConnect(card))
+									var a = 3 - player.countCards("h", card => !get.info("_sxrm_connect").isConnect(card))
 									if (a < 1) { a = 0 }
 									const connects = [];
 									const target = event.result.targets[0];
 									if (target == player) {
 										const result1 = await player
-											.choosePlayerCard(target, "h", true, 4)
+											.choosePlayerCard(target, "h", true, 3)
 											.set("filterButton", button => {
 												return !get.info("_sxrm_connect").isConnect(button.link);
 											})
@@ -9408,7 +9413,7 @@ export default function () {
 										}
 									} else {
 										const result = await player
-											.choosePlayerCard(target, "h", true, [a, 4])
+											.choosePlayerCard(target, "h", true, [a, 3])
 											.set("filterButton", button => {
 												return !get.info("_sxrm_connect").isConnect(button.link);
 											})
@@ -9416,7 +9421,7 @@ export default function () {
 											.forResult();
 										if (result?.bool) {
 											connects.addArray(result.links);
-											var b = 4 - result.links.length
+											var b = 3 - result.links.length
 										}
 									}
 									if (b == 0) {
@@ -9462,7 +9467,7 @@ export default function () {
 									}
 								}
 							},
-							ffxuzhangai: {
+							/*ffxuzhangai: {
 								enable: "phaseUse",
 								audio: "sbshipo",
 								usable: 1,
@@ -9511,6 +9516,24 @@ export default function () {
 										a++
 									}
 								}
+							},*/
+							ffxuzhangai: {
+								enable: "phaseUse",
+								audio: "sbshipo",							
+								filter(event, player) {
+									const cards = _status.discarded.filter(card => get.name(card) == "sha");
+									return cards.length > 0
+								},
+								selectCard: 1,
+								filterCard(card, player) {
+									return get.name(card) != "sha"
+								},
+								position: "he",									
+								async content(event, trigger, player) {
+									await player.discard(event.cards)
+									const cards = _status.discarded.filter(card => get.name(card) == "sha");
+									await player.gain(cards)
+								}								
 							},
 							fflianliugai: {
 								enable: "phaseUse",
@@ -11358,11 +11381,36 @@ export default function () {
 							},
 							ffjiemu:{
 								trigger:{
-									global:"useCard",
+									global:["useCardAfter","phaseBegin"],
 								},
 								audio: "ext:重塑系列削弱版/audio:2",
 								group:"ffjiemu_ct",
+								forced:true,
 								filter(event,player){
+									if(event.name == "phase"){
+										return player.countCards("he") > 0
+									}else{
+										return player.countCards("h") < player.getExpansions("ffjiemu").length
+									}
+								},
+								async content(event, trigger, player) {
+									if(trigger.name == "phase"){
+										var result = await player.chooseCard({
+											position: "he",
+											selectCard: [1, Infinity],
+										}).forResult()									
+										if(result.bool){
+											await player.addToExpansion(player, "gain2", result.cards).set("gaintag", ["ffjiemu"]);	
+										}									
+									}else{
+										if(player.getExpansions("ffjiemu").length - player.countCards("h") > 3){
+											await player.draw(3)
+										}else{
+											await player.drawTo(player.getExpansions("ffjiemu").length)
+										}
+									}
+								},
+								/*filter(event,player){
 									if(player.countMark("ffjiemu") < player.countMark("ffjiemu_ct")){
 										return false
 									}
@@ -11426,7 +11474,7 @@ export default function () {
 										return
 									},
 								},
-								marktext: "接",								
+								marktext: "接",	*/							
 							},
 							ffwuwang:{
 								trigger:{
@@ -11458,26 +11506,37 @@ export default function () {
 											if (event.responded || event.ffwuwang_use) {
 												return false;
 											}
-											return player.getExpansions("ffjiemu").some(card => event.filterCard(card, player, event));
+											var tar = game.filterPlayer(function (target) {
+												return target.hasSkill('ffwuwang');
+											});
+											return tar[0].getExpansions("ffjiemu").some(card => event.filterCard(card, player, event));
 										},
 										chooseButton: {
 											dialog(event, player) {
-												return ui.create.dialog("无妄", player.getExpansions("ffjiemu"), "hidden");
+												var tar = game.filterPlayer(function (target) {
+													return target.hasSkill('ffwuwang');
+												});												
+												return ui.create.dialog("无妄", tar[0].getExpansions("ffjiemu"), "hidden");
 											},
 											filter(button, player) {
 												const evt = _status.event.getParent();
 												return evt.filterCard(button.link, player, evt);
 											},
-											check(button) {
+											check(button) {												
 												const card = button.link,
 													player = get.player();
 												return player.getUseValue(card);
 											},
 											backup(links, player) {
 												return {
+													async precontent(event, trigger, player) {
+														var cards = lib.skill.ffwuwang_use_backup.card
+														event.result.card.cards = cards
+														event.result.cards = cards														
+													},
 													audio: "ffwuwang",
 													filterCard(card) {
-														return card === lib.skill.ffwuwang_use_backup.card;
+														return card == lib.skill.ffwuwang_use_backup.card;
 													},
 													selectCard: -1,
 													viewAs: links[0],
@@ -11742,12 +11801,32 @@ export default function () {
 								trigger:{
 									global: "phaseEnd",
 								},
+								onChooseToUse(event) {
+									if (!game.online && !event.ffjiaozhen) {
+										var count = 0;
+										const targets = get.players(null, true)
+										for (let target of targets) {
+											var list = target.getHistory("damage")
+											if(list.length > 0){
+												for (var i = 0; i < list.length; i++) {
+  													count += list[i].num;
+												}	
+											}
+										}
+										event.set("ffjiaozhen_his", count);
+									}
+								},								
 								enable: "phaseUse",
 								usable:1,
 								filter(event,player){
-									const targets = get.players(null, true)
-									for (let target of targets) {
-										if(target.getHistory("damage").length > 0)return true
+									if(event.name == "phase"){
+                              	    	const targets = get.players(null, true)
+                              	    	for (let target of targets) {
+                              	        	if(target.getHistory("damage").length > 0)return true
+                             	       	}
+									}else{
+										const his = event.ffjiaozhen_his;
+										return his > 0;
 									}
 								},
 								audio: "ext:重塑系列削弱版/audio:2",
@@ -11764,9 +11843,11 @@ export default function () {
 										const targets = get.players(null, true)
 										for (let target of targets) {
 											var list = target.getHistory("damage")
-											for (var i = 0; i < list.length; i++) {
-  												count += list[i].num;
-											}	
+											if(list.length > 0){
+												for (var i = 0; i < list.length; i++) {
+  													count += list[i].num;
+												}	
+											}
 										}
 										var dis = Math.min(count, _status.discarded.length);
 										var tar = Math.min(count, result.targets[0].countCards("h"));
@@ -12023,9 +12104,13 @@ export default function () {
 				},
 				{
 					type: "players", data: [
-						"ff_zhouqungai",
-						"ff_xiexuangai",
 						"ff_mengchangjun",
+						"ff_xuhuang_gai",
+						"ff_sp_zhugeliang_gai",
+						"ffguojiagai",
+						"ff_luxungai",
+						"ff_chunshenjun",
+						"ff_zhuronggai",
 					]
 				},
 			];
