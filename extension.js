@@ -8,22 +8,25 @@ export default function () {
 		}, precontent: function (csxl2) {
 			//武将评级
 			lib.arenaReady.push(function () {
-				//仙界
+				//传说
 				var pj_sss = [
 					"ffxuyougai","ff_simaaigai","ff_xiahoudungai","ffweiyangai","ff_sunjian_gai","ff_xuexugai","ff_sunyi","ff_jushougai","ff_xiahouhuigai","ffsunshangxianggai"
 				];
-				//阴间
+				//史诗
 				var pj_s = [
 					"ffwangcangai","ff_liuan_gai","ff_menghuogai","ff_zhuronggai","ff_zhangjinyungai","ff_luxungai","ffmihenggai","ffyangbiaogai","ff_sp_liubei_gai","ff_liuhuigai",
 					"ff_mengchangjun","ffsp_xuyougai","ff_yujigai","ff_jiananfeng_gai","ff_xiexuangai","ffsimayigai",
 				];
-				//阳间
+				//精品
 				var pj_a = [
-					
+					"ff_jiangweigai","ffguojiagai","ff_ruanyu_gai","ff_xuhuang_gai","ff_ruanjigai","ff_xunyuxunyougai","ffzhugelianggai","ff_sp_zhugeliang_gai","ff_puyuangai","ff_beimihugai",
+					"ff_chunshenjun","ff_leyi","ff_pingyuanjun","ff_xinlingjun","ff_yangzhengai",
 				];
-				//素将
+				//平凡
 				var pj_b = [
-
+					"ff_caopigai","ff_caozhigai","ffgaotanglonggai","ff_xunyu_gai","ff_guohuaigai","ff_wangguanggai","ff_wangyigai","ff_xuncangai","ffmachaogai","ff_jiangwanfeiyigai",
+					"ff_pangtonggai","ff_zhouqungai","ff_zhugezhangai","ff_chenwudongxigai","fflvmenggai","ffsunlianggai","ff_lusu_gai","ff_lujigai","ff_sunhegai","ff_xuyanzhangmigai",
+					"ffjiaxugai","ffzhangjiaogai","ff_fazheng_gai","ff_simahui_gai","ff_yanwen_gai","ff_hanshaogai","ff_gai_liru","ff_taishicigai","ff_tiandan","w_zhengquangai",
 				];				
 				for (var i = 0; i < pj_sss.length; i++) {
 					lib.rank.rarity.legend.push(pj_sss[i]);
@@ -12096,9 +12099,9 @@ export default function () {
 				init: "off",
 				item: {
 					off: "关闭",
-					rare: "禁用阳间及以上",
-					epic: "禁用阴间及以上",
-					legend: "禁用仙界",
+					rare: "禁用精品及以上",
+					epic: "禁用史诗及以上",
+					legend: "禁用传说",
 				},
 			},					
 			update_source: {
