@@ -4,8 +4,8 @@ const crypto = require('crypto');
 
 const EXT_DIR = './';          // 脚本放在扩展根目录运行
 const OUTPUT = 'manifest.json';
-const VERSION = 'v1.0.8';      // 版本号，每次更新请修改
-const UPDATE_NOTE = 'v1.0.8新增武将乐毅、田单，增强：周群、sp诸葛亮,半重做：郭嘉、春申君、徐晃，削弱：陆逊、孟尝君、祝融，修复若干bug'; // 更新说明
+const VERSION = 'v1.1.0';      // 版本号，每次更新请修改
+const UPDATE_NOTE = 'v1.1.0新增武将分级功能，可在扩展设置中一键禁用阴间武将'; // 更新说明
 
 // 递归获取所有文件相对路径
 function walkDir(dir, baseDir, fileList = []) {

@@ -6,11 +6,46 @@ export default function () {
 		name: "重塑系列削弱版", content: function (config, pack) {
 
 		}, precontent: function (csxl2) {
+			//武将评级
+			lib.arenaReady.push(function () {
+				//仙界
+				var pj_sss = [
+					"ffxuyougai","ff_simaaigai","ff_xiahoudungai","ffweiyangai","ff_sunjian_gai","ff_xuexugai","ff_sunyi","ff_jushougai","ff_xiahouhuigai","ffsunshangxianggai"
+				];
+				//阴间
+				var pj_s = [
+					"ffwangcangai","ff_liuan_gai","ff_menghuogai","ff_zhuronggai","ff_zhangjinyungai","ff_luxungai","ffmihenggai","ffyangbiaogai","ff_sp_liubei_gai","ff_liuhuigai",
+					"ff_mengchangjun","ffsp_xuyougai","ff_yujigai","ff_jiananfeng_gai","ff_xiexuangai","ffsimayigai",
+				];
+				//阳间
+				var pj_a = [
+					
+				];
+				//素将
+				var pj_b = [
+
+				];				
+				for (var i = 0; i < pj_sss.length; i++) {
+					lib.rank.rarity.legend.push(pj_sss[i]);
+				}
+				for (var i = 0; i < pj_s.length; i++) {
+					lib.rank.rarity.epic.push(pj_s[i]);
+				}
+				for (var i = 0; i < pj_a.length; i++) {
+					lib.rank.rarity.rare.push(pj_a[i]);
+				}
+				for (var i = 0; i < pj_b.length; i++) {
+					lib.rank.rarity.junk.push(pj_b[i]);
+				}								
+			});			
 			if (csxl2.enable) {				
 				game.import('character', function () {
+					const banRarities = ["rare", "epic", "legend"];
+					const characterFilter = {};								
 					var csxl2 = {
 						name: 'csxl2',//武将包命名（必填）
 						connect: true,//该武将包是否可以联机（必填）
+						characterFilter,
 						character: {
 							ff_gai_liru: {
 								sex: "male",
@@ -110,13 +145,13 @@ export default function () {
 								skills: ["ffluanchenggai", "fffujigai"],
 								img: "extension/重塑系列削弱版/pic/ffjiaxugai.jpg",
 							},
-							/*ffxuyougai: {
+							ffxuyougai: {
 								sex: "male",
 								group: "wei",
 								hp: 3,
 								skills: ["ffshigonggai", "ffqingmangai", "ffsiyangai"],
 								img: "extension/重塑系列削弱版/pic/ffxuyougai.jpg",
-							},*/
+							},
 							ffgaotanglonggai: {
 								sex: "male",
 								group: "wei",
@@ -175,13 +210,13 @@ export default function () {
 								skills: ["ffyaofa","ffjiyao"],
 								img: "extension/重塑系列削弱版/pic/ffyujigai.jpg",
 							},
-							/*ff_xiahoudungai: {
+							ff_xiahoudungai: {
 								sex: "male",
 								group: "wei",
 								hp: 4,
 								skills: ["ffshimugai", "ffbujigai"],
 								img: "extension/重塑系列削弱版/pic/ffxiahoudungai.jpg",
-							},*/
+							},
 							ff_yangzhengai: {
 								sex: "male",
 								group: "qun",
@@ -912,7 +947,7 @@ export default function () {
 							ffqiefu_info:"每轮开始时，你可以用任意张牌交换一名其他角色至多X+1张牌，当你失去所有因此获得的牌时，重复此效果。(X为你选择的牌数)",
 							ff_pingyuanjun:"平原君",
 							ffwenqie:"刎妾",
-							ffwenqie_info:"当你造成或受到伤害后，你可令一名角色将手牌数调整至手牌上限。",
+							ffwenqie_info:"每回合限一次，当你造成或受到伤害后，你可令一名角色将手牌数调整至手牌上限。",
 							ffsancai:"散财",
 							ffsancai_info:"你可以分配中央区的X张牌，若中央区牌数=X，你将中央区的牌当即时牌使用并移出，否则此技能本回合失效。(X为你手牌数/2，向下取整)",	
 							ff_leyi:"乐毅",
@@ -11639,6 +11674,7 @@ export default function () {
 									source: "damageAfter",
 									player: "damageAfter",
 								},
+								usable:1,
 								audio: "ext:重塑系列削弱版/audio:2",
 								/*filter(event,player){
 									return game.hasPlayer(function (target) {
@@ -12038,15 +12074,33 @@ export default function () {
 						for(var i in whmx3.character){whmx3.character[i][4].push('ext:物华弥新/'+i+'.jpg');}
 					}else{
 						for(var i in whmx3.character){whmx3.character[i][4].push('db:extension-物华弥新:'+i+'.jpg');}
-					}*/
+					}*/	
+					const characters = csxl2.character
+					for (const name of Object.keys(characters)) {
+						characterFilter[name] = () => {
+							const threshold = banRarities.indexOf(lib.config.extension_重塑系列削弱版_csxl2_ban_rarity);
+							return threshold < 0 || banRarities.indexOf(game.getRarity(name)) < threshold;
+						};
+					}														
 					return csxl2;
-				});
+				});				
 				lib.config.all.characters.push('csxl2');
 				if (!lib.config.characters.contains('csxl2')) lib.config.characters.push('csxl2');
 				lib.translate['csxl2_character_config'] = '重塑系列削弱版';					
-			};
+			};						
 		}, 
 				config: {
+			csxl2_ban_rarity: {
+				name: "禁用武将",
+				intro: "生成选将候选时，禁用所选强度及以上的《重塑系列》武将。",
+				init: "off",
+				item: {
+					off: "关闭",
+					rare: "禁用阳间及以上",
+					epic: "禁用阴间及以上",
+					legend: "禁用仙界",
+				},
+			},					
 			update_source: {
 				name: `<font color="#9c27b0">更新镜像源`,
 				init: "0",
